@@ -6,7 +6,7 @@
 /*   By: hzhou <hzhou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 18:53:37 by hzhou             #+#    #+#             */
-/*   Updated: 2020/11/21 13:02:06 by hzhou            ###   ########.fr       */
+/*   Updated: 2020/11/21 13:38:54 by hzhou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,14 @@ static int	gnl_read(int fd, char *heap, char **stack, char **line)
 	return (result > 0 ? 1 : result);
 }
 
+static void	ft_result_zero(char **stack, char **line)
+{
+	if (*stack == NULL || *stack[0] == '\0')
+		*line = ft_strdup("");
+	else
+		*line = ft_strdup(*stack);
+}
+
 int			get_next_line(int fd, char **line)
 {
 	static char	*stack[OPEN_MAX];
@@ -77,17 +85,17 @@ int			get_next_line(int fd, char **line)
 		return (-1);
 	if (stack[fd])
 		if (gnl_verif(&stack[fd], line))
+		{
+			ft_freeing(&heap);
 			return (1);
+		}
 	result = gnl_read(fd, heap, &stack[fd], line);
 	ft_freeing(&heap);
 	if (result != 0)
 		return (result);
 	if (result == 0)
 	{
-		if (stack[fd] == NULL || stack[fd][0] == '\0')
-			*line = ft_strdup("");
-		else
-			*line = ft_strdup(stack[fd]);
+		ft_result_zero(&stack[fd], line);
 		ft_freeing(&stack[fd]);
 	}
 	return (0);
